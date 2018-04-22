@@ -63,14 +63,14 @@ class NetSampler:
 
         records = []
         for i in range(n_case):
-            uid = self.samples[i, 0]
-            pid = self.samples[i, 1]
+            u_id = self.samples[i, 0]
+            m_id = self.samples[i, 1]
 
             # 每个正样本对应只会生成一个负样本
-            while negs[i] == pid:
+            while negs[i] == m_id:
                 negs[i] = random.randint(0, self.n_movie - 1)
-            records.append([uid, pid])
-            records.append([uid, negs[i]])
+            records.append([u_id, m_id])
+            records.append([u_id, negs[i]])
         records = np.asarray(records)
 
         # 这里n_samples是正样本的个数
@@ -98,14 +98,14 @@ class NetSampler:
         records = []
         # 每一生成对应的标签，也就是隐式反馈的结果
         for i in range(n_case):
-            uid = self.samples[i, 0]
-            pid = self.samples[i, 1]
+            u_id = self.samples[i, 0]
+            m_id = self.samples[i, 1]
 
-            records.append([uid, pid])
+            records.append([u_id, m_id])
             for j in range(self.n_neg):
-                while negs[i, j] == pid:
+                while negs[i, j] == m_id:
                     negs[i, j] = random.randint(0, self.n_movie - 1)
-                records.append([uid, negs[i, j]])
+                records.append([u_id, negs[i, j]])
         records = np.asarray(records)
 
         # n_samples 为正样本的个数
@@ -154,7 +154,6 @@ class NetSampler:
 
         self.n_user = n_user
         self.n_movie = n_movie
-        self.n_time = 48
 
         self.samples = np.asarray(samples, dtype=int)
         self.cases = np.asarray(cases, dtype=int)

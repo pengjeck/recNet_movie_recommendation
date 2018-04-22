@@ -27,7 +27,9 @@ def convert_rating_movie_id():
             if len(line) <= 0:
                 break
             parts = line.split(',')
-            new_rating_f.write('{},{}\n'.format(int(parts[0]) - 1, movie_ids[int(parts[1])]))
+            # 只有评分大于或等于3的才会被记为正样本
+            if float(parts[2]) >= 3:
+                new_rating_f.write('{},{}\n'.format(int(parts[0]) - 1, movie_ids[int(parts[1])]))
 
 
 def count_user():
@@ -40,4 +42,6 @@ def count_user():
             parts = line.split(',')
             user_ids.append(int(parts[0]))
     print(n_user, len(set(user_ids)))
+
+
 convert_rating_movie_id()
