@@ -54,9 +54,8 @@ def bin_loss(samples, labels, lamb, u_co, v_co, n_neg):
     u = tf.nn.embedding_lookup(vec_u, samples[:, 0], name="users")
 
     v = tf.nn.embedding_lookup(vec_v, samples[:, 1], name="po_items")
-    pre_v = tf.nn.embedding_lookup(vec_v, samples[:, 2], name="pre_items")
 
-    vec = tf.concat([u, pre_v, v], axis=1)
+    vec = tf.concat([u, v], axis=1)
 
     network = network_predict(vec, is_train=True, reuse=False)
     network_test = network_predict(vec, is_train=False, reuse=True)
@@ -66,6 +65,7 @@ def bin_loss(samples, labels, lamb, u_co, v_co, n_neg):
 
     scores = tf.reshape(predict, [-1, 1 + n_neg])
     pos_scores = scores[:, 0]
+    # 计算最大误差的的得分
     neg_scores = tf.reduce_max(scores[:, 1:], axis=1)
 
     loss = tf.reduce_sum(
@@ -112,6 +112,7 @@ def train_rec_net(dataset, n_neg, n_epoch, lamb, lr, n_batch):
     for j in range(n_epoch):
         total_loss = 0
         st = time.time()
+        # 训练网络
         for pos_samples, lb in sampler.next_batch_hard():
             feed_dict = {
                 samples: pos_samples,
@@ -123,6 +124,7 @@ def train_rec_net(dataset, n_neg, n_epoch, lamb, lr, n_batch):
 
         print("Iteration ", j, " eclapsed ", time.time() - st, " seconds, loss is: ", total_loss)
 
+        # 计算相关的评价参数的值，这里我们要使用准确率和召回率，需要自己去写
         # if j % 4 == 0 and j > 30:
         if j % 4 == 0 and j > 100:
             acc5 = 0.0
@@ -134,13 +136,11 @@ def train_rec_net(dataset, n_neg, n_epoch, lamb, lr, n_batch):
             for record in sampler.cases:
                 uid = record[0]
                 pid = record[1]
-                pre_pid = record[2]
-                tid = record[3]
 
                 dp_dict = tl.utils.dict_to_one(network_test.all_drop)
                 feed_dict = {
-                    samples: np.asarray([[uid] * sampler.n_movie, list(range(sampler.n_movie)), [pre_pid] * sampler.n_movie,
-                                         [tid] * sampler.n_movie], dtype=int).T
+                    samples: np.asarray([[uid] * sampler.n_movie,
+                                         list(range(sampler.n_movie))], dtype=int).T
                 }
                 feed_dict.update(dp_dict)
                 ratings = sess.run(predict, feed_dict=feed_dict)
