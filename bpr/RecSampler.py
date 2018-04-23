@@ -32,7 +32,7 @@ class BPRSampler:
             [mtr, mte] = pickle.load(f, encoding="utf8")
 
         with open("../data/" + dataset + "/maps.pkl", "rb") as f:
-            [user_id, id_user, movie_id, id_movie] = pickle.load(f, encoding="utf8")
+            [user_id, _, movie_id, _] = pickle.load(f, encoding="utf8")
 
         samples = []
         taboo = {}

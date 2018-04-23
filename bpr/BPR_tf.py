@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import tensorflow as tf
-from .RecSampler import BPRSampler
+from RecSampler import BPRSampler
 
 import time
 import numpy as np
@@ -91,10 +91,10 @@ def train_bpr(dataset, n_dim, n_epoch, lamb, lr):
                 else:
                     n_user_t -= 1
 
-            print(
-                "Mean Precision: " + str(pre5 / n_user_t) + "\t" + str(pre10 / n_user_t) + "\t" + str(pre20 / n_user_t))
-            print(
-                "Mean Recall   : " + str(rec5 / n_user_t) + "\t" + str(rec10 / n_user_t) + "\t" + str(rec20 / n_user_t))
+            print("Mean Precision: " + str(pre5 / n_user_t) + "\t" + str(pre10 / n_user_t) + "\t" + str(
+                pre20 / n_user_t))
+            print("Mean Recall   : " + str(rec5 / n_user_t) + "\t" + str(rec10 / n_user_t) + "\t" + str(
+                rec20 / n_user_t))
             print("MRR: ", mrr / n_user_t)
             print("")
 

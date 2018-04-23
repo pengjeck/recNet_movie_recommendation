@@ -138,6 +138,7 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
 
             for record in sampler.cases:
                 u_id = record[0]
+                # 访问的那个id
                 m_id = record[1]
 
                 dp_dict = tl.utils.dict_to_one(network_test.all_drop)
@@ -166,7 +167,9 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
                 if count % 10000 == 0:
                     print(count)
 
-            print("Acc@5: ", acc5 / count, "Acc@10: ", acc10 / count, "Acc@20: ", acc20 / count)
+            print("Acc@5: ", acc5 / count,
+                  "Acc@10: ", acc10 / count,
+                  "Acc@20: ", acc20 / count)
             print(mrr / count)
             print("")
 
@@ -187,5 +190,5 @@ def rec_net(n_neg=20, n_epoch=400, lamb=0.00001, lr=0.0003, n_batch=100):
     train_rec_net(n_neg, n_epoch, lamb, lr, n_batch)
 
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 rec_net()
