@@ -55,6 +55,7 @@ def bin_loss(samples, labels, lamb, u_co, v_co, n_neg):
 
     v = tf.nn.embedding_lookup(vec_v, samples[:, 1], name="po_items")
 
+    # u v 连接在一起作为一个向量
     vec = tf.concat([u, v], axis=1)
 
     network = network_predict(vec, is_train=True, reuse=False)
@@ -85,12 +86,12 @@ def bin_loss(samples, labels, lamb, u_co, v_co, n_neg):
     return loss, network, network_test, para, predict_test
 
 
-def train_rec_net(dataset, n_neg, n_epoch, lamb, lr, n_batch):
+def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
     sess = tf.InteractiveSession()
 
-    sampler = NetSampler(dataset, n_neg=n_neg, n_batch=n_batch)
+    sampler = NetSampler(n_neg=n_neg, n_batch=n_batch)
     # 样本和标签的placeholder
-    samples = tf.placeholder(tf.int32, [None, 4], name="po")
+    samples = tf.placeholder(tf.int32, [None, 2], name="po")
     labels = tf.placeholder(tf.float32, [None, ], name="la")
 
     loss, network, network_test, para, predict = bin_loss(samples,
@@ -103,11 +104,10 @@ def train_rec_net(dataset, n_neg, n_epoch, lamb, lr, n_batch):
     optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(loss, var_list=para)
 
     # 运行网络？
-    sess.run(tf.initialize_all_variables())
+    sess.run(tf.global_variables_initializer())
     network.print_params()
 
     log = open("result.log", "w", encoding="utf8")
-    log.writelines("Dataset: " + dataset + "\n")
 
     for j in range(n_epoch):
         total_loss = 0
@@ -119,12 +119,15 @@ def train_rec_net(dataset, n_neg, n_epoch, lamb, lr, n_batch):
                 labels: lb
             }
             feed_dict.update(network.all_drop)
-            _, bat_loss = sess.run((optimizer, loss), feed_dict=feed_dict)
+            _, bat_loss = sess.run((optimizer, loss),
+                                   feed_dict=feed_dict)
             total_loss += bat_loss
 
+        # 第几轮，耗时多少，损失多少，
         print("Iteration ", j, " eclapsed ", time.time() - st, " seconds, loss is: ", total_loss)
 
         # 计算相关的评价参数的值，这里我们要使用准确率和召回率，需要自己去写
+        # 每4轮计算一次准确率和召回率，前面100轮不计算
         # if j % 4 == 0 and j > 30:
         if j % 4 == 0 and j > 100:
             acc5 = 0.0
@@ -134,30 +137,30 @@ def train_rec_net(dataset, n_neg, n_epoch, lamb, lr, n_batch):
             count = 0.0
 
             for record in sampler.cases:
-                uid = record[0]
-                pid = record[1]
+                u_id = record[0]
+                m_id = record[1]
 
                 dp_dict = tl.utils.dict_to_one(network_test.all_drop)
                 feed_dict = {
-                    samples: np.asarray([[uid] * sampler.n_movie,
+                    samples: np.asarray([[u_id] * sampler.n_movie,
                                          list(range(sampler.n_movie))], dtype=int).T
                 }
                 feed_dict.update(dp_dict)
                 ratings = sess.run(predict, feed_dict=feed_dict)
-                ratings[sampler.vtr[uid]] = -1000
+                ratings[sampler.vtr[u_id]] = -1000
                 res = np.argsort(-ratings)
 
-                if pid in res[0:5]:
+                if m_id in res[0:5]:
                     acc5 += 1
                     acc10 += 1
                     acc20 += 1
-                elif pid in res[0:10]:
+                elif m_id in res[0:10]:
                     acc10 += 1
                     acc20 += 1
-                elif pid in res[0:20]:
+                elif m_id in res[0:20]:
                     acc20 += 1
 
-                mrr += 1 / (np.argwhere(res == pid)[0, 0] + 1)
+                mrr += 1 / (np.argwhere(res == m_id)[0, 0] + 1)
                 count += 1
 
                 if count % 10000 == 0:
@@ -177,12 +180,12 @@ def train_rec_net(dataset, n_neg, n_epoch, lamb, lr, n_batch):
     log.close()
 
 
-def rec_net(dataset, n_neg=20, n_epoch=400, lamb=0.00001, lr=0.0003, n_batch=100):
+def rec_net(n_neg=20, n_epoch=400, lamb=0.00001, lr=0.0003, n_batch=100):
     print("learning rate", lr)
     print("regularization term", lamb)
 
-    train_rec_net(dataset, n_neg, n_epoch, lamb, lr, n_batch)
+    train_rec_net(n_neg, n_epoch, lamb, lr, n_batch)
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-rec_net("fs")
+# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+rec_net()

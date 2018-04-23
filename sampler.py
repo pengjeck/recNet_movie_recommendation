@@ -123,22 +123,21 @@ class NetSampler:
             # 正负样本一样多？？
             yield batch_samples, np.asarray([1] * ac_batch_size + [0] * ac_batch_size)
 
-    def __init__(self, dataset, n_neg=1, n_batch=50):
-        print("Initialize Dataset: ", dataset)
+    def __init__(self, n_neg=1, n_batch=50):
 
-        with open("../" + dataset + "/vtr.pkl", "rb") as f:
-            [vi, vtr, vte] = pickle.load(f, encoding="utf8")
+        with open(new_base_path + "/vtr.pkl", "rb") as f:
+            [vtr] = pickle.load(f, encoding="utf8")
 
         # 只有两项
-        with open(dataset + "/co.pkl", "rb") as f:
+        with open(new_base_path + "/co.pkl", "rb") as f:
             [u_co, v_co] = pickle.load(f, encoding="utf8")
 
         # 训练数据
-        with open(dataset + "/train.pkl", "rb") as f:
+        with open(new_base_path + "/train.pkl", "rb") as f:
             raw_samples = pickle.load(f, encoding="utf8")
 
         # 测试数据
-        with open(dataset + "/test.pkl", "rb") as f:
+        with open(new_base_path + "/test.pkl", "rb") as f:
             raw_cases = pickle.load(f, encoding="utf8")
 
         samples = []
