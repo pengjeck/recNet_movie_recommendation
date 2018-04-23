@@ -4,7 +4,7 @@ import pickle
 import numpy as np
 from sklearn.decomposition import NMF
 from config import *
-from time import time
+from time import time, sleep
 
 co_matrix = np.zeros((n_movie, n_movie), dtype=float)
 
@@ -41,12 +41,17 @@ def create_vte():
     return {}
 
 
-vtr = create_vtr()
-vte = create_vte()
+# vtr = create_vtr()
+# vte = create_vte()
 
-with open(new_base_path + 'vtr.pkl', 'wb') as f:
-    pickle.dump([vtr], f)
-exit(0)
+# with open(new_base_path + 'vtr.pkl', 'wb') as f:
+#     pickle.dump([vtr], f)
+#     f.flush()
+# sleep(10)
+# exit(0)
+
+with open(new_base_path + 'vtr.pkl', 'rb') as f:
+    [vtr] = pickle.load(f)
 
 beg_t = time()
 

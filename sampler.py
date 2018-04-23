@@ -24,10 +24,8 @@ class NetSampler:
         for i in range(n_case):
             u_id = self.samples[i, 0]
             m_id = self.samples[i, 1]
-            pre_pid = self.samples[i, 2]
-            tid = self.samples[i, 3]
 
-            records.append([u_id, m_id, pre_pid, tid])
+            records.append([u_id, m_id])
             labels.append(1)
             for j in range(self.n_neg):
                 # 当前列对应的movie不能是用户已经浏览过的，如果是的话，一定要重新随机生成
@@ -35,7 +33,7 @@ class NetSampler:
                     # 负样本
                     negs[i, j] = random.randint(0, self.n_movie - 1)
                 # 每一个正样本下面对应添加 self.n_neg 个负样本
-                records.append([u_id, negs[i, j], pre_pid, tid])
+                records.append([u_id, negs[i, j]])
                 labels.append(0)
         records = np.asarray(records)
         labels = np.asarray(labels)
@@ -65,16 +63,14 @@ class NetSampler:
 
         records = []
         for i in range(n_case):
-            uid = self.samples[i, 0]
-            pid = self.samples[i, 1]
-            pre_pid = self.samples[i, 2]
-            tid = self.samples[i, 3]
+            u_id = self.samples[i, 0]
+            m_id = self.samples[i, 1]
 
             # 每个正样本对应只会生成一个负样本
-            while negs[i] == pid:
+            while negs[i] == m_id:
                 negs[i] = random.randint(0, self.n_movie - 1)
-            records.append([uid, pid, pre_pid, tid])
-            records.append([uid, negs[i], pre_pid, tid])
+            records.append([u_id, m_id])
+            records.append([u_id, negs[i]])
         records = np.asarray(records)
 
         # 这里n_samples是正样本的个数
@@ -102,16 +98,14 @@ class NetSampler:
         records = []
         # 每一生成对应的标签，也就是隐式反馈的结果
         for i in range(n_case):
-            uid = self.samples[i, 0]
-            pid = self.samples[i, 1]
-            pre_pid = self.samples[i, 2]
-            tid = self.samples[i, 3]
+            u_id = self.samples[i, 0]
+            m_id = self.samples[i, 1]
 
-            records.append([uid, pid, pre_pid, tid])
+            records.append([u_id, m_id])
             for j in range(self.n_neg):
-                while negs[i, j] == pid:
+                while negs[i, j] == m_id:
                     negs[i, j] = random.randint(0, self.n_movie - 1)
-                records.append([uid, negs[i, j], pre_pid, tid])
+                records.append([u_id, negs[i, j]])
         records = np.asarray(records)
 
         # n_samples 为正样本的个数
@@ -151,16 +145,15 @@ class NetSampler:
         cases = []
 
         for record in raw_samples:
-            samples.append([record[0], record[1], record[2], record[3]])
+            samples.append([record[0], record[1]])
 
         for record in raw_cases:
-            cases.append([record[0], record[1], record[2], record[3]])
+            cases.append([record[0], record[1]])
 
         self.vtr = vtr
 
         self.n_user = n_user
         self.n_movie = n_movie
-        self.n_time = 48
 
         self.samples = np.asarray(samples, dtype=int)
         self.cases = np.asarray(cases, dtype=int)
