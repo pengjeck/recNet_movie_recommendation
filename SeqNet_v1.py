@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 
 import tensorflow as tf
 import tensorlayer as tl
 from tensorflow.contrib.layers import l2_regularizer
-
 from sampler import NetSampler
 import time
 import numpy as np
