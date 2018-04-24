@@ -39,8 +39,8 @@ class BPRSampler:
                 samples.append([uid, mid])
         print(len(samples))
 
-        self.n_user = 3883
-        self.n_movie = 6040
+        self.n_user = 6038
+        self.n_movie = 3883
         self.mte = mte
         self.taboo = taboo
         self.samples = np.asarray(samples, dtype=int)

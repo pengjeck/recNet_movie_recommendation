@@ -29,10 +29,10 @@ def bpr_loss(samples, n_user, n_movie, n_dim, lamb, test_user):
     return loss, predict, vec_u, vec_v
 
 
-def train_bpr(dataset, n_dim, n_epoch, lamb, lr):
+def train_bpr(n_dim, n_epoch, lamb, lr):
     sess = tf.InteractiveSession()
 
-    sampler = BPRSampler(dataset)
+    sampler = BPRSampler()
     samples = tf.placeholder(tf.int32, [None, 3], name="samp")
     test_user = tf.placeholder(tf.int32, [1], name="test_user")
 
@@ -41,7 +41,7 @@ def train_bpr(dataset, n_dim, n_epoch, lamb, lr):
     loss, predict, vec_u, vec_v = bpr_loss(samples, sampler.n_user, sampler.n_movie, n_dim, lamb, test_user)
     optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(loss, var_list=[vec_u, vec_v])
 
-    sess.run(tf.initialize_all_variables())
+    sess.run(tf.global_variables_initializer())
 
     for j in range(n_epoch):
         total_loss = 0
@@ -54,7 +54,7 @@ def train_bpr(dataset, n_dim, n_epoch, lamb, lr):
             total_loss += bat_loss
         print("Iteration ", j, " eclapsed ", time.time() - st, " seconds, loss is: ", total_loss)
 
-        if j % 2 == 0 and j > 400:
+        if j % 2 == 0:
             pre5 = 0.0
             pre10 = 0.0
             pre20 = 0.0
@@ -99,9 +99,9 @@ def train_bpr(dataset, n_dim, n_epoch, lamb, lr):
             print("")
 
 
-def bpr_mf(dataset, n_dim=100, n_epoch=1000, lamb=0.0001, lr=0.0005):
-    train_bpr(dataset, n_dim, n_epoch, lamb, lr)
+def bpr_mf(n_dim=100, n_epoch=1000, lamb=0.0001, lr=0.0005):
+    train_bpr(n_dim, n_epoch, lamb, lr)
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-bpr_mf("m1m")
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+bpr_mf()
