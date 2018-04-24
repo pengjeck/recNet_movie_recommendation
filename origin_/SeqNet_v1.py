@@ -156,7 +156,7 @@ def train_rec_net(dataset, n_neg, n_epoch, lamb, lr, n_batch):
                 }
                 feed_dict.update(dp_dict)
                 ratings = sess.run(predict, feed_dict=feed_dict)
-                ratings[sampler.vtr[uid]] = -1000
+                ratings[sampler.taboo[uid]] = -1000
                 res = np.argsort(-ratings)
 
                 if pid in res[0:5]:

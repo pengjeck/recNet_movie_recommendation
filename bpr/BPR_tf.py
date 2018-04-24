@@ -54,7 +54,7 @@ def train_bpr(dataset, n_dim, n_epoch, lamb, lr):
             total_loss += bat_loss
         print("Iteration ", j, " eclapsed ", time.time() - st, " seconds, loss is: ", total_loss)
 
-        if j % 2 == 0:
+        if j % 2 == 0 and j > 400:
             pre5 = 0.0
             pre10 = 0.0
             pre20 = 0.0
@@ -77,17 +77,17 @@ def train_bpr(dataset, n_dim, n_epoch, lamb, lr):
                 res10 = res[0:10]
                 res20 = res[0:20]
 
-                pre5 += 1.0 * len(set(res5) & set(sampler.gr[uid])) / 5
-                rec5 += 1.0 * len(set(res5) & set(sampler.gr[uid])) / len(sampler.gr[uid])
-                pre10 += 1.0 * len(set(res10) & set(sampler.gr[uid])) / 10
-                rec10 += 1.0 * len(set(res10) & set(sampler.gr[uid])) / len(sampler.gr[uid])
-                pre20 += 1.0 * len(set(res20) & set(sampler.gr[uid])) / 20
-                rec20 += 1.0 * len(set(res20) & set(sampler.gr[uid])) / len(sampler.gr[uid])
+                pre5 += 1.0 * len(set(res5) & set(sampler.mte[uid])) / 5
+                rec5 += 1.0 * len(set(res5) & set(sampler.mte[uid])) / len(sampler.mte[uid])
+                pre10 += 1.0 * len(set(res10) & set(sampler.mte[uid])) / 10
+                rec10 += 1.0 * len(set(res10) & set(sampler.mte[uid])) / len(sampler.mte[uid])
+                pre20 += 1.0 * len(set(res20) & set(sampler.mte[uid])) / 20
+                rec20 += 1.0 * len(set(res20) & set(sampler.mte[uid])) / len(sampler.mte[uid])
 
-                if len(sampler.gr[uid]):
-                    for mid in sampler.gr[uid]:
+                if len(sampler.mte[uid]):
+                    for mid in sampler.mte[uid]:
                         u_mrr += 1 / (np.argwhere(res == mid)[0, 0] + 1)
-                    mrr += u_mrr / len(sampler.gr[uid])
+                    mrr += u_mrr / len(sampler.mte[uid])
                 else:
                     n_user_t -= 1
 

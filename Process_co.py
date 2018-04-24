@@ -4,41 +4,9 @@ import pickle
 import numpy as np
 from sklearn.decomposition import NMF
 from config import *
-from time import time, sleep
+from time import time
 
 co_matrix = np.zeros((n_movie, n_movie), dtype=float)
-
-
-def create_vtr():
-    """
-    训练集
-    vtr = {
-        'uid': ['pid1', 'pid2']
-    }
-    :return:
-    """
-    res = {}
-    with open(new_rating_file_path, 'r') as f:
-        while True:
-            line = f.readline()
-            if len(line) <= 0:
-                break
-
-            parts = line.split(',')
-            user_id = int(parts[0])
-            if user_id not in res:
-                res[user_id] = [int(parts[1])]
-            else:
-                res[user_id].append(int(parts[1]))
-    return res
-
-
-def create_vte():
-    """
-    构建测试集
-    :return:
-    """
-    return {}
 
 
 # vtr = create_vtr()
@@ -50,21 +18,21 @@ def create_vte():
 # sleep(10)
 # exit(0)
 
-with open(new_base_path + 'vtr.pkl', 'rb') as f:
-    [vtr] = pickle.load(f)
+with open(new_base_path + 'data.pkl', 'rb') as f:
+    [mte, mtr] = pickle.load(f)
 
 beg_t = time()
 
 # 这样会自动的遍历 dict的key
-for uid in vtr:
+for uid in mtr:
     # 当前用户访问过多少
-    count = len(vtr[uid])
+    count = len(mtr[uid])
 
     for i in range(count):
-        pid1 = vtr[uid][i]
+        pid1 = mtr[uid][i]
         co_matrix[pid1, pid1] += 1
         for j in range(i + 1, count):
-            pid2 = vtr[uid][j]
+            pid2 = mtr[uid][j]
             co_matrix[pid1, pid2] += 1
             co_matrix[pid2, pid1] += 1
 
@@ -86,9 +54,9 @@ u_g = np.zeros((n_user, 100), dtype=float)
 # 遍每一个用户
 for i in range(n_user):
     # 得到每个用户访问的地点
-    for pid in vtr[i]:
+    for pid in mtr[i]:
         u_g[i] += Vec[pid]
-    u_g[i] /= len(vtr[i])
+    u_g[i] /= len(mtr[i])
 # u_g[i]代表均值
 
 t3 = time()

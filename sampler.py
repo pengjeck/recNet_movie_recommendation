@@ -67,7 +67,7 @@ class NetSampler:
             m_id = self.samples[i, 1]
 
             # 每个正样本对应只会生成一个负样本
-            while negs[i] == m_id:
+            while negs[i] in self.taboo[u_id]:
                 negs[i] = random.randint(0, self.n_movie - 1)
             records.append([u_id, m_id])
             records.append([u_id, negs[i]])
@@ -103,7 +103,7 @@ class NetSampler:
 
             records.append([u_id, m_id])
             for j in range(self.n_neg):
-                while negs[i, j] == m_id:
+                while negs[i, j] in self.taboo[u_id]:
                     negs[i, j] = random.randint(0, self.n_movie - 1)
                 records.append([u_id, negs[i, j]])
         records = np.asarray(records)
@@ -125,37 +125,33 @@ class NetSampler:
 
     def __init__(self, n_neg=1, n_batch=50):
 
-        with open(new_base_path + "/vtr.pkl", "rb") as f:
-            [vtr] = pickle.load(f, encoding="utf8")
+        with open(new_base_path + "/data.pkl", "rb") as f:
+            [mte, mtr] = pickle.load(f, encoding="utf8")
 
         # 只有两项
         with open(new_base_path + "/co.pkl", "rb") as f:
             [u_co, v_co] = pickle.load(f, encoding="utf8")
 
-        # 训练数据
-        with open(new_base_path + "/train.pkl", "rb") as f:
-            raw_samples = pickle.load(f, encoding="utf8")
-
-        # 测试数据
-        with open(new_base_path + "/test.pkl", "rb") as f:
-            raw_cases = pickle.load(f, encoding="utf8")
-
         samples = []
+        taboo = {}
+        for uid in mtr:
+            taboo[uid] = set(mtr[uid])
+            for mid in mtr[uid]:
+                samples.append([uid, mid])
+
         cases = []
+        for uid in mtr:
+            for mid in mte[uid]:
+                cases.append([uid, mid])
 
-        for record in raw_samples:
-            samples.append([record[0], record[1]])
-
-        for record in raw_cases:
-            cases.append([record[0], record[1]])
-
-        self.vtr = vtr
+        self.cases = cases
+        self.mte = mte
+        self.taboo = taboo
+        self.samples = np.asarray(samples, dtype=int)
 
         self.n_user = n_user
         self.n_movie = n_movie
 
-        self.samples = np.asarray(samples, dtype=int)
-        self.cases = np.asarray(cases, dtype=int)
         self.n_neg = n_neg
         self.n_batch = n_batch
 

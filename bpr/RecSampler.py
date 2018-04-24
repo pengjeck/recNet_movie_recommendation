@@ -27,12 +27,9 @@ class BPRSampler:
         for i in range(n_batch):
             yield records[i * batch_size: (i + 1) * batch_size, :]
 
-    def __init__(self, dataset, n_batch=50):
-        with open("../data/" + dataset + "/data.pkl", "rb") as f:
+    def __init__(self, n_batch=50):
+        with open("../data/ml-1m/data.pkl", "rb") as f:
             [mtr, mte] = pickle.load(f, encoding="utf8")
-
-        with open("../data/" + dataset + "/maps.pkl", "rb") as f:
-            [user_id, _, movie_id, _] = pickle.load(f, encoding="utf8")
 
         samples = []
         taboo = {}
@@ -42,9 +39,9 @@ class BPRSampler:
                 samples.append([uid, mid])
         print(len(samples))
 
-        self.n_user = len(user_id)
-        self.n_movie = len(movie_id)
-        self.gr = mte
+        self.n_user = 3883
+        self.n_movie = 6040
+        self.mte = mte
         self.taboo = taboo
         self.samples = np.asarray(samples, dtype=int)
         self.n_batch = n_batch

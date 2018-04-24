@@ -128,18 +128,20 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
 
         # 计算相关的评价参数的值，这里我们要使用准确率和召回率，需要自己去写
         # 每4轮计算一次准确率和召回率，前面100轮不计算
-        # if j % 4 == 0 and j > 30:
-        if j % 4 == 0 and j > 100:
-            acc5 = 0.0
-            acc10 = 0.0
-            acc20 = 0.0
-            mrr = 0.0
-            count = 0.0
+        if j % 4 == 0 and j > 300:
+            pre5 = 0.0
+            pre10 = 0.0
+            pre20 = 0.0
+            rec5 = 0.0
+            rec10 = 0.0
+            rec20 = 0.0
+            mrr = 0
+            n_user_t = sampler.n_user
+            count = 0
 
             for record in sampler.cases:
                 u_id = record[0]
                 # 访问的那个id
-                m_id = record[1]
 
                 dp_dict = tl.utils.dict_to_one(network_test.all_drop)
                 feed_dict = {
@@ -148,35 +150,46 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
                 }
                 feed_dict.update(dp_dict)
                 ratings = sess.run(predict, feed_dict=feed_dict)
-                ratings[sampler.vtr[u_id]] = -1000
+                ratings[sampler.taboo[u_id]] = -1000
                 res = np.argsort(-ratings)
 
-                if m_id in res[0:5]:
-                    acc5 += 1
-                    acc10 += 1
-                    acc20 += 1
-                elif m_id in res[0:10]:
-                    acc10 += 1
-                    acc20 += 1
-                elif m_id in res[0:20]:
-                    acc20 += 1
+                u_mrr = 0
 
-                mrr += 1 / (np.argwhere(res == m_id)[0, 0] + 1)
+                res5 = res[0:5]
+                res10 = res[0:10]
+                res20 = res[0:20]
+
+                pre5 += 1.0 * len(set(res5) & set(sampler.mte[u_id])) / 5
+                rec5 += 1.0 * len(set(res5) & set(sampler.mte[u_id])) / len(sampler.mte[u_id])
+                pre10 += 1.0 * len(set(res10) & set(sampler.mte[u_id])) / 10
+                rec10 += 1.0 * len(set(res10) & set(sampler.mte[u_id])) / len(sampler.mte[u_id])
+                pre20 += 1.0 * len(set(res20) & set(sampler.mte[u_id])) / 20
+                rec20 += 1.0 * len(set(res20) & set(sampler.mte[u_id])) / len(sampler.mte[u_id])
+
+                if len(sampler.mte[u_id]):
+                    for mid in sampler.mte[u_id]:
+                        u_mrr += 1 / (np.argwhere(res == mid)[0, 0] + 1)
+                    mrr += u_mrr / len(sampler.mte[u_id])
+                else:
+                    n_user_t -= 1
+
                 count += 1
 
                 if count % 10000 == 0:
                     print(count)
 
-            print("Acc@5: ", acc5 / count,
-                  "Acc@10: ", acc10 / count,
-                  "Acc@20: ", acc20 / count)
-            print(mrr / count)
+            print("Mean Precision: " + str(pre5 / n_user_t) + "\t" + str(pre10 / n_user_t) + "\t" + str(
+                pre20 / n_user_t))
+            print("Mean Recall   : " + str(rec5 / n_user_t) + "\t" + str(rec10 / n_user_t) + "\t" + str(
+                rec20 / n_user_t))
+            print("MRR: ", mrr / n_user_t)
             print("")
 
-            log.writelines("Iteration: " + str(j) + ", loss: " + str(total_loss) + "\n")
-            log.writelines("Acc@5: " + str(acc5 / count) + ", Acc@10: " +
-                           str(acc10 / count) + ", Acc@20: " + str(acc20 / count) + "\n")
-            log.writelines("MRR: " + str(mrr / count) + "\n")
+            log.writelines("Mean Precision: " + str(pre5 / n_user_t) + "\t" + str(pre10 / n_user_t) + "\t" + str(
+                pre20 / n_user_t))
+            log.writelines("Mean Recall   : " + str(rec5 / n_user_t) + "\t" + str(rec10 / n_user_t) + "\t" + str(
+                rec20 / n_user_t))
+            log.writelines("MRR: " + mrr / n_user_t)
             log.writelines("\n")
 
             log.flush()
