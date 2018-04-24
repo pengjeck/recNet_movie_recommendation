@@ -140,7 +140,7 @@ class NetSampler:
                 samples.append([uid, mid])
 
         cases = []
-        for uid in mtr:
+        for uid in mte:
             for mid in mte[uid]:
                 cases.append([uid, mid])
 

@@ -127,8 +127,9 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
         print("Iteration ", j, " eclapsed ", time.time() - st, " seconds, loss is: ", total_loss)
 
         # 计算相关的评价参数的值，这里我们要使用准确率和召回率，需要自己去写
-        # 每4轮计算一次准确率和召回率，前面100轮不计算
-        if j % 4 == 0 and j > 300:
+        # 每4轮计算一次准确率和召回率，前面300轮不计算
+        # if j % 10 == 0 and j > 300:
+        if j % 10 == 0:
             pre5 = 0.0
             pre10 = 0.0
             pre20 = 0.0
@@ -139,10 +140,7 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
             n_user_t = sampler.n_user
             count = 0
 
-            for record in sampler.cases:
-                u_id = record[0]
-                # 访问的那个id
-
+            for u_id in range(sampler.n_user):
                 dp_dict = tl.utils.dict_to_one(network_test.all_drop)
                 feed_dict = {
                     samples: np.asarray([[u_id] * sampler.n_movie,
