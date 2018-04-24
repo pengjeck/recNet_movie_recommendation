@@ -148,7 +148,7 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
                 }
                 feed_dict.update(dp_dict)
                 ratings = sess.run(predict, feed_dict=feed_dict)
-                ratings[sampler.taboo[u_id]] = -1000
+                ratings[list(sampler.taboo[u_id])] = -1000
                 res = np.argsort(-ratings)
 
                 u_mrr = 0

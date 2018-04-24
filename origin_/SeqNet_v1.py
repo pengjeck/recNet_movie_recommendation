@@ -151,7 +151,9 @@ def train_rec_net(dataset, n_neg, n_epoch, lamb, lr, n_batch):
 
                 dp_dict = tl.utils.dict_to_one(network_test.all_drop)
                 feed_dict = {
-                    samples: np.asarray([[uid] * sampler.n_movie, list(range(sampler.n_movie)), [pre_pid] * sampler.n_movie,
+                    samples: np.asarray([[uid] * sampler.n_movie,
+                                         list(range(sampler.n_movie)),
+                                         [pre_pid] * sampler.n_movie,
                                          [tid] * sampler.n_movie], dtype=int).T
                 }
                 feed_dict.update(dp_dict)
