@@ -19,9 +19,9 @@ def network_predict(x, is_train=True, reuse=False):
         # network = tl.layers.DenseLayer(network, 2048, name='relu5')
         # network = tl.layers.BatchNormLayer(network, act=tf.nn.relu, name="bn5", is_train=is_train)
         #
-        network = tl.layers.DropoutLayer(network, keep=0.7, name='drop0')
-        network = tl.layers.DenseLayer(network, 1024, name='relu0')
-        network = tl.layers.BatchNormLayer(network, act=tf.nn.relu, name="bn0", is_train=is_train)
+        # network = tl.layers.DropoutLayer(network, keep=0.7, name='drop0')
+        # network = tl.layers.DenseLayer(network, 1024, name='relu0')
+        # network = tl.layers.BatchNormLayer(network, act=tf.nn.relu, name="bn0", is_train=is_train)
 
         network = tl.layers.DropoutLayer(network, keep=0.7, name='drop1')
         network = tl.layers.DenseLayer(network, 512, name='relu2')
@@ -187,7 +187,7 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
                 pre20 / n_user_t))
             log.writelines("Mean Recall   : " + str(rec5 / n_user_t) + "\t" + str(rec10 / n_user_t) + "\t" + str(
                 rec20 / n_user_t))
-            log.writelines("MRR: " + mrr / n_user_t)
+            log.writelines("MRR: " + str(mrr / n_user_t))
             log.writelines("\n")
 
             log.flush()
@@ -201,5 +201,5 @@ def rec_net(n_neg=20, n_epoch=400, lamb=0.00001, lr=0.0003, n_batch=100):
     train_rec_net(n_neg, n_epoch, lamb, lr, n_batch)
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 rec_net()
