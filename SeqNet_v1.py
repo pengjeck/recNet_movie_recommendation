@@ -19,9 +19,9 @@ def network_predict(x, is_train=True, reuse=False):
         # network = tl.layers.DenseLayer(network, 2048, name='relu5')
         # network = tl.layers.BatchNormLayer(network, act=tf.nn.relu, name="bn5", is_train=is_train)
         #
-        # network = tl.layers.DropoutLayer(network, keep=0.7, name='drop0')
-        # network = tl.layers.DenseLayer(network, 1024, name='relu0')
-        # network = tl.layers.BatchNormLayer(network, act=tf.nn.relu, name="bn0", is_train=is_train)
+        network = tl.layers.DropoutLayer(network, keep=0.7, name='drop0')
+        network = tl.layers.DenseLayer(network, 1024, name='relu0')
+        network = tl.layers.BatchNormLayer(network, act=tf.nn.relu, name="bn0", is_train=is_train)
 
         network = tl.layers.DropoutLayer(network, keep=0.7, name='drop1')
         network = tl.layers.DenseLayer(network, 512, name='relu2')

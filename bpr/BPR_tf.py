@@ -54,7 +54,7 @@ def train_bpr(n_dim, n_epoch, lamb, lr):
             total_loss += bat_loss
         print("Iteration ", j, " eclapsed ", time.time() - st, " seconds, loss is: ", total_loss)
 
-        if j % 2 == 0 and j > 100:
+        if j % 2 == 0 and j > 600:
             pre5 = 0.0
             pre10 = 0.0
             pre20 = 0.0
