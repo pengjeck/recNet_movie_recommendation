@@ -39,7 +39,7 @@ class BPRSampler:
                 samples.append([uid, mid])
         print(len(samples))
 
-        self.n_user = 6038
+        self.n_user = 6034
         self.n_movie = 3883
         self.mte = mte
         self.taboo = taboo
