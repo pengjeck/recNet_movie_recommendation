@@ -139,12 +139,6 @@ class NetSampler:
             for mid in mtr[uid]:
                 samples.append([uid, mid])
 
-        cases = []
-        for uid in mte:
-            for mid in mte[uid]:
-                cases.append([uid, mid])
-
-        self.cases = cases
         self.mte = mte
         self.taboo = taboo
         self.samples = np.asarray(samples, dtype=int)

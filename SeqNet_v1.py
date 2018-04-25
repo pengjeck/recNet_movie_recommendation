@@ -104,6 +104,7 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
         st = time.time()
         # 训练网络
         for pos_samples, lb in sampler.next_batch_hard():
+            # for pos_samples, lb in sampler.next_batch():
             feed_dict = {
                 samples: pos_samples,
                 labels: lb
@@ -184,5 +185,5 @@ def rec_net(n_neg=20, n_epoch=400, lamb=0.00001, lr=0.0003, n_batch=100):
     train_rec_net(n_neg, n_epoch, lamb, lr, n_batch)
 
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 rec_net()
