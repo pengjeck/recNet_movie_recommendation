@@ -29,7 +29,7 @@ class NetSampler:
             labels.append(1)
             for j in range(self.n_neg):
                 # 当前列对应的movie不能是用户已经浏览过的，如果是的话，一定要重新随机生成
-                while negs[i, j] == m_id:
+                while negs[i, j] in self.taboo[u_id]:
                     # 负样本
                     negs[i, j] = random.randint(0, self.n_movie - 1)
                 # 每一个正样本下面对应添加 self.n_neg 个负样本

@@ -38,16 +38,6 @@ def network_predict(x, is_train=True, reuse=False):
 
 
 def bin_loss(samples, labels, lamb, u_co, v_co, n_neg):
-    """
-    还不知道是干嘛的
-    :param samples: 样本入口
-    :param labels: 标签入口
-    :param lamb: 调参参数
-    :param u_co: user_vector
-    :param v_co: profile_vector
-    :param n_neg: 多少个负样本
-    :return:
-    """
     vec_u = tf.Variable(u_co, dtype=tf.float32)
     vec_v = tf.Variable(v_co, dtype=tf.float32)
 
@@ -128,8 +118,7 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
 
         # 计算相关的评价参数的值，这里我们要使用准确率和召回率，需要自己去写
         # 每4轮计算一次准确率和召回率，前面300轮不计算
-        # if j % 10 == 0 and j > 300:
-        if j % 10 == 0:
+        if j % 4 == 0 and j > 300:
             pre5 = 0.0
             pre10 = 0.0
             pre20 = 0.0
@@ -138,7 +127,6 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
             rec20 = 0.0
             mrr = 0
             n_user_t = sampler.n_user
-            count = 0
 
             for u_id in range(sampler.n_user):
                 dp_dict = tl.utils.dict_to_one(network_test.all_drop)
@@ -170,11 +158,6 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
                     mrr += u_mrr / len(sampler.mte[u_id])
                 else:
                     n_user_t -= 1
-
-                count += 1
-
-                if count % 10000 == 0:
-                    print(count)
 
             print("Mean Precision: " + str(pre5 / n_user_t) + "\t" + str(pre10 / n_user_t) + "\t" + str(
                 pre20 / n_user_t))
