@@ -17,7 +17,7 @@ co_matrix = np.zeros((n_movie, n_movie), dtype=float)
 #     f.flush()
 # sleep(10)
 # exit(0)
-
+s = 10
 with open(new_base_path + 'data.pkl', 'rb') as f:
     [mtr, mte] = pickle.load(f)
 
@@ -27,7 +27,6 @@ beg_t = time()
 for uid in mtr:
     # 当前用户访问过多少
     count = len(mtr[uid])
-
     for i in range(count):
         pid1 = mtr[uid][i]
         co_matrix[pid1, pid1] += 1
@@ -40,7 +39,7 @@ t1 = time()
 print(t1 - beg_t)
 
 # 分解得到：(n * 100) * (100 * m)
-model = NMF(n_components=100, init='nndsvd')
+model = NMF(n_components=s, init='nndsvd')
 model.fit(co_matrix)
 H = model.components_
 
@@ -49,7 +48,7 @@ print(t2 - t1)
 
 # Vec.shape = (m, 100)
 Vec = H.T
-u_g = np.zeros((n_user, 100), dtype=float)
+u_g = np.zeros((n_user, s), dtype=float)
 
 # 遍每一个用户
 for i in range(n_user):

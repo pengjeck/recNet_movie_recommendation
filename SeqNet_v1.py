@@ -178,7 +178,7 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
     log.close()
 
 
-def rec_net(n_neg=20, n_epoch=400, lamb=0.00001, lr=0.0003, n_batch=100):
+def rec_net(n_neg=4, n_epoch=400, lamb=0.0001, lr=0.0003, n_batch=100):
     print("learning rate", lr)
     print("regularization term", lamb)
 

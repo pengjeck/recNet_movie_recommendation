@@ -126,7 +126,7 @@ class NetSampler:
     def __init__(self, n_neg=1, n_batch=50):
 
         with open(new_base_path + "/data.pkl", "rb") as f:
-            [mte, mtr] = pickle.load(f, encoding="utf8")
+            [mtr, mte] = pickle.load(f, encoding="utf8")
 
         # 只有两项
         with open(new_base_path + "/co.pkl", "rb") as f:
