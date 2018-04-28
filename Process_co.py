@@ -17,7 +17,7 @@ co_matrix = np.zeros((n_movie, n_movie), dtype=float)
 #     f.flush()
 # sleep(10)
 # exit(0)
-s = 40
+s = 50
 with open(new_base_path + 'data.pkl', 'rb') as f:
     [mtr, mte] = pickle.load(f)
 
