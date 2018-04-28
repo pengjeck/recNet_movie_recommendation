@@ -118,8 +118,8 @@ def train_rec_net(n_neg, n_epoch, lamb, lr, n_batch):
         print("Iteration ", j, " eclapsed ", time.time() - st, " seconds, loss is: ", total_loss)
 
         # 计算相关的评价参数的值，这里我们要使用准确率和召回率，需要自己去写
-        # 每4轮计算一次准确率和召回率，前面300轮不计算
-        if j % 4 == 0 and j > 300:
+        # 每4轮计算一次准确率和召回率，前面100轮不计算
+        if j % 10 == 0 and j > 100:
             pre5 = 0.0
             pre10 = 0.0
             pre20 = 0.0
@@ -185,5 +185,5 @@ def rec_net(n_neg=4, n_epoch=400, lamb=0.0001, lr=0.0003, n_batch=100):
     train_rec_net(n_neg, n_epoch, lamb, lr, n_batch)
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 rec_net()
